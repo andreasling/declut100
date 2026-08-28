@@ -1,0 +1,1210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>100-Day Decluttering Challenge</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7f4;
+      --surface: #ffffff;
+      --surface-2: #eef3ed;
+      --ink: #16201b;
+      --muted: #637169;
+      --line: #d8e0da;
+      --green: #2f7d4f;
+      --green-2: #dff1e5;
+      --yellow: #a66f00;
+      --yellow-2: #fff1cf;
+      --red: #ad3a2b;
+      --red-2: #ffe1dc;
+      --blue: #256f91;
+      --blue-2: #dceff6;
+      --shadow: 0 16px 42px rgba(22, 32, 27, 0.09);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+    }
+
+    .app {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 24px 0 40px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: flex-start;
+      margin-bottom: 18px;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    h1 {
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
+      line-height: 1.05;
+      letter-spacing: 0;
+    }
+
+    h2 {
+      font-size: 1rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h3 {
+      font-size: 0.95rem;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      margin-top: 6px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(340px, 0.94fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .panel,
+    dialog {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .today-total {
+      display: grid;
+      grid-template-columns: minmax(148px, 0.8fr) minmax(180px, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .total-display {
+      min-height: 190px;
+      display: grid;
+      place-content: center;
+      text-align: center;
+      background: linear-gradient(180deg, #f9fbf8 0%, #edf5ef 100%);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .number {
+      font-size: clamp(4.8rem, 12vw, 7.8rem);
+      line-height: 0.9;
+      font-weight: 800;
+      letter-spacing: 0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .caption {
+      color: var(--muted);
+      font-size: 0.95rem;
+      margin-top: 10px;
+    }
+
+    .status-box {
+      display: grid;
+      align-content: start;
+      gap: 12px;
+      min-height: 190px;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .badge {
+      display: inline-flex;
+      width: fit-content;
+      align-items: center;
+      min-height: 28px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .badge.green {
+      color: var(--green);
+      background: var(--green-2);
+    }
+
+    .badge.yellow {
+      color: var(--yellow);
+      background: var(--yellow-2);
+    }
+
+    .badge.blue {
+      color: var(--blue);
+      background: var(--blue-2);
+    }
+
+    .badge.red {
+      color: var(--red);
+      background: var(--red-2);
+    }
+
+    .status-copy {
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .quick-add {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .primary-btn,
+    .secondary-btn,
+    .ghost-btn,
+    .icon-btn {
+      min-height: 42px;
+      border-radius: 7px;
+      font-weight: 750;
+      transition: transform 0.14s ease, background 0.14s ease, border-color 0.14s ease;
+    }
+
+    .primary-btn:active,
+    .secondary-btn:active,
+    .ghost-btn:active,
+    .icon-btn:active {
+      transform: translateY(1px);
+    }
+
+    .primary-btn {
+      color: #fff;
+      background: var(--green);
+      padding: 0 16px;
+    }
+
+    .primary-btn:hover {
+      background: #256a41;
+    }
+
+    .secondary-btn {
+      color: var(--ink);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      padding: 0 13px;
+    }
+
+    .secondary-btn:hover {
+      background: #e3ebe5;
+    }
+
+    .ghost-btn {
+      color: var(--muted);
+      background: transparent;
+      border: 1px solid transparent;
+      padding: 0 11px;
+    }
+
+    .ghost-btn:hover {
+      color: var(--ink);
+      border-color: var(--line);
+      background: #f7faf8;
+    }
+
+    .icon-btn {
+      width: 38px;
+      min-height: 38px;
+      display: inline-grid;
+      place-items: center;
+      color: var(--muted);
+      background: #f7faf8;
+      border: 1px solid var(--line);
+    }
+
+    .icon-btn:hover {
+      color: var(--ink);
+      background: #eef3ed;
+    }
+
+    .suggestions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .suggestion {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 34px;
+      padding: 6px 10px;
+      border-radius: 7px;
+      color: var(--blue);
+      background: var(--blue-2);
+      font-weight: 750;
+      font-size: 0.9rem;
+      white-space: nowrap;
+    }
+
+    .actions-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .additions {
+      display: grid;
+      gap: 8px;
+    }
+
+    .empty {
+      color: var(--muted);
+      background: #f8faf8;
+      border: 1px dashed var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      line-height: 1.4;
+    }
+
+    .addition-row,
+    .history-row {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      min-height: 48px;
+      padding: 8px 10px;
+      background: #fbfcfb;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .time,
+    .date {
+      color: var(--muted);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .addition-count,
+    .day-total {
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .row-actions {
+      display: flex;
+      gap: 6px;
+      justify-content: end;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      min-height: 94px;
+      padding: 13px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 0.82rem;
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.45rem;
+      font-weight: 850;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .meter {
+      height: 7px;
+      overflow: hidden;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: #e8eee9;
+    }
+
+    .meter > span {
+      display: block;
+      height: 100%;
+      width: var(--value, 0%);
+      max-width: 100%;
+      background: var(--green);
+    }
+
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+      gap: 6px;
+    }
+
+    .grid-cell {
+      position: relative;
+      aspect-ratio: 1;
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: #f8faf8;
+      color: var(--muted);
+      font-weight: 750;
+      font-size: clamp(0.65rem, 1.9vw, 0.92rem);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .grid-cell.used {
+      color: var(--green);
+      background: var(--green-2);
+      border-color: #b9dec5;
+    }
+
+    .grid-cell.duplicate {
+      color: var(--yellow);
+      background: var(--yellow-2);
+      border-color: #efd18b;
+    }
+
+    .grid-cell.today {
+      outline: 3px solid rgba(37, 111, 145, 0.24);
+      outline-offset: 1px;
+    }
+
+    .grid-cell .mark {
+      position: absolute;
+      right: 3px;
+      bottom: 2px;
+      font-size: 0.58rem;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .history {
+      display: grid;
+      gap: 8px;
+      max-height: 520px;
+      overflow: auto;
+      padding-right: 2px;
+    }
+
+    .history-row {
+      grid-template-columns: 66px minmax(0, 1fr) auto;
+    }
+
+    .history-details {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 0.86rem;
+      line-height: 1.45;
+      border-top: 1px solid var(--line);
+      padding-top: 8px;
+    }
+
+    .completion {
+      display: none;
+      margin-bottom: 18px;
+      border-color: #b9dec5;
+      background: #f5fbf7;
+    }
+
+    .completion.show {
+      display: block;
+    }
+
+    dialog {
+      width: min(420px, calc(100% - 28px));
+      padding: 0;
+      border: 1px solid var(--line);
+    }
+
+    dialog::backdrop {
+      background: rgba(22, 32, 27, 0.42);
+    }
+
+    .dialog-inner {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .field input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 8px 10px;
+      color: var(--ink);
+      background: #fff;
+      font-size: 1rem;
+    }
+
+    .dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 9px;
+      flex-wrap: wrap;
+    }
+
+    .danger {
+      color: var(--red);
+    }
+
+    .desktop-reset {
+      display: inline-flex;
+    }
+
+    .mobile-reset {
+      display: none;
+    }
+
+    @media (max-width: 860px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        align-items: stretch;
+      }
+
+      .desktop-reset {
+        display: none;
+      }
+
+      .mobile-reset {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .app {
+        width: min(100% - 20px, 1180px);
+        padding-top: 14px;
+      }
+
+      .topbar,
+      .today-total,
+      .metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar {
+        display: grid;
+      }
+
+      .panel {
+        padding: 14px;
+      }
+
+      .quick-add {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .addition-row,
+      .history-row {
+        grid-template-columns: 58px minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .number-grid {
+        gap: 4px;
+      }
+
+      .grid-cell {
+        border-radius: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <h1>100-Day Decluttering Challenge</h1>
+        <p class="subtitle" id="challengeSubtitle">Start today and track every item removed.</p>
+      </div>
+      <button class="ghost-btn desktop-reset" id="resetButton" type="button">Reset</button>
+    </header>
+
+    <section class="panel completion" id="completionPanel" aria-live="polite"></section>
+
+    <div class="layout">
+      <div class="stack">
+        <section class="panel" aria-labelledby="todayTitle">
+          <div class="panel-header">
+            <div>
+              <h2 id="todayTitle">Today</h2>
+              <p class="subtitle" id="todayDate"></p>
+            </div>
+            <span class="badge blue" id="dayBadge">Day 1 of 100</span>
+          </div>
+
+          <div class="today-total">
+            <div class="total-display">
+              <div class="number" id="todayTotal">0</div>
+              <div class="caption">items so far</div>
+            </div>
+            <div class="status-box">
+              <span class="badge" id="uniqueBadge">Not started</span>
+              <p class="status-copy" id="uniqueCopy">Add items to see whether today's total is a new number.</p>
+              <div>
+                <h3>Nearest unused</h3>
+                <div class="suggestions" id="suggestions"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-add" aria-label="Quick add items">
+            <button class="secondary-btn" data-add="1" type="button">+1</button>
+            <button class="secondary-btn" data-add="2" type="button">+2</button>
+            <button class="secondary-btn" data-add="5" type="button">+5</button>
+            <button class="secondary-btn" id="customAddButton" type="button">Add</button>
+          </div>
+
+          <div class="actions-row">
+            <button class="primary-btn" id="finishButton" type="button">Finish day</button>
+            <button class="ghost-btn" id="undoButton" type="button">Undo last</button>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="additionsTitle">
+          <div class="panel-header">
+            <h2 id="additionsTitle">Recent Additions</h2>
+          </div>
+          <div class="additions" id="additionsList"></div>
+        </section>
+      </div>
+
+      <div class="stack">
+        <section class="panel" aria-labelledby="progressTitle">
+          <div class="panel-header">
+            <h2 id="progressTitle">Progress</h2>
+            <button class="ghost-btn mobile-reset" id="mobileResetButton" type="button">Reset</button>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <div class="metric-label">Days</div>
+              <div class="metric-value" id="daysMetric">0 / 100</div>
+              <div class="meter"><span id="daysMeter"></span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Unique numbers</div>
+              <div class="metric-value" id="uniqueMetric">0 / 100</div>
+              <div class="meter"><span id="uniqueMeter"></span></div>
+            </div>
+            <div class="metric">
+              <div class="metric-label">Items</div>
+              <div class="metric-value" id="itemsMetric">0 / 5,050</div>
+              <div class="meter"><span id="itemsMeter"></span></div>
+            </div>
+          </div>
+          <div class="number-grid" id="numberGrid" aria-label="Numbers 1 through 100"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="historyTitle">
+          <div class="panel-header">
+            <h2 id="historyTitle">History</h2>
+          </div>
+          <div class="history" id="historyList"></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog id="countDialog">
+    <form class="dialog-inner" method="dialog">
+      <h2 id="dialogTitle">Add Items</h2>
+      <div class="field">
+        <label for="countInput">Item count</label>
+        <input id="countInput" type="number" min="1" step="1" inputmode="numeric" required>
+      </div>
+      <div class="dialog-actions">
+        <button class="ghost-btn" value="cancel" type="submit">Cancel</button>
+        <button class="primary-btn" id="saveCountButton" value="default" type="submit">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script>
+    const STORAGE_KEY = "declutteringChallenge.v1";
+    const DAY_COUNT = 100;
+    const ITEM_GOAL = 5050;
+
+    const state = {
+      challenge: loadChallenge(),
+      editingAdditionId: null
+    };
+
+    const els = {
+      challengeSubtitle: document.querySelector("#challengeSubtitle"),
+      completionPanel: document.querySelector("#completionPanel"),
+      dayBadge: document.querySelector("#dayBadge"),
+      todayDate: document.querySelector("#todayDate"),
+      todayTotal: document.querySelector("#todayTotal"),
+      uniqueBadge: document.querySelector("#uniqueBadge"),
+      uniqueCopy: document.querySelector("#uniqueCopy"),
+      suggestions: document.querySelector("#suggestions"),
+      additionsList: document.querySelector("#additionsList"),
+      finishButton: document.querySelector("#finishButton"),
+      undoButton: document.querySelector("#undoButton"),
+      daysMetric: document.querySelector("#daysMetric"),
+      uniqueMetric: document.querySelector("#uniqueMetric"),
+      itemsMetric: document.querySelector("#itemsMetric"),
+      daysMeter: document.querySelector("#daysMeter"),
+      uniqueMeter: document.querySelector("#uniqueMeter"),
+      itemsMeter: document.querySelector("#itemsMeter"),
+      numberGrid: document.querySelector("#numberGrid"),
+      historyList: document.querySelector("#historyList"),
+      resetButton: document.querySelector("#resetButton"),
+      mobileResetButton: document.querySelector("#mobileResetButton"),
+      customAddButton: document.querySelector("#customAddButton"),
+      quickAddButtons: document.querySelectorAll("[data-add]"),
+      countDialog: document.querySelector("#countDialog"),
+      dialogTitle: document.querySelector("#dialogTitle"),
+      countInput: document.querySelector("#countInput"),
+      saveCountButton: document.querySelector("#saveCountButton")
+    };
+
+    function createChallenge() {
+      return {
+        id: createId(),
+        startDate: localIsoDate(new Date()),
+        days: []
+      };
+    }
+
+    function loadChallenge() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return createChallenge();
+
+      try {
+        const parsed = JSON.parse(raw);
+        if (!parsed || !Array.isArray(parsed.days)) return createChallenge();
+        return parsed;
+      } catch {
+        return createChallenge();
+      }
+    }
+
+    function saveChallenge() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state.challenge));
+    }
+
+    function createId() {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return Date.now().toString(36) + "-" + Math.random().toString(36).slice(2);
+    }
+
+    function localIsoDate(date) {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return year + "-" + month + "-" + day;
+    }
+
+    function formatDate(value) {
+      return new Intl.DateTimeFormat(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric"
+      }).format(new Date(`${value}T12:00:00`));
+    }
+
+    function formatTime(value) {
+      return new Intl.DateTimeFormat(undefined, {
+        hour: "2-digit",
+        minute: "2-digit"
+      }).format(new Date(value));
+    }
+
+    function formatNumber(value) {
+      return new Intl.NumberFormat().format(value);
+    }
+
+    function dayTotal(day) {
+      return day.additions.reduce((sum, addition) => sum + Number(addition.count || 0), 0);
+    }
+
+    function completedDays() {
+      return state.challenge.days.filter((day) => day.status === "completed");
+    }
+
+    function currentDay() {
+      const active = state.challenge.days.find((day) => day.status !== "completed");
+      if (active) return active;
+
+      const completed = completedDays().length;
+      if (completed >= DAY_COUNT) return null;
+
+      const date = new Date(`${state.challenge.startDate}T12:00:00`);
+      date.setDate(date.getDate() + completed);
+
+      const day = {
+        dayNumber: completed + 1,
+        date: localIsoDate(date),
+        status: "in progress",
+        additions: [],
+        completedAt: null
+      };
+      state.challenge.days.push(day);
+      saveChallenge();
+      return day;
+    }
+
+    function numberUsage() {
+      const usage = new Map();
+      for (const day of completedDays()) {
+        const total = dayTotal(day);
+        if (total < 1 || total > DAY_COUNT) continue;
+        const existing = usage.get(total) || [];
+        existing.push(day);
+        usage.set(total, existing);
+      }
+      return usage;
+    }
+
+    function stats() {
+      const completed = completedDays();
+      const usage = numberUsage();
+      const totalItems = completed.reduce((sum, day) => sum + dayTotal(day), 0);
+      const duplicateDays = completed.filter((day, index, days) => {
+        const total = dayTotal(day);
+        return days.findIndex((candidate) => dayTotal(candidate) === total) !== index;
+      }).length;
+
+      return {
+        completed,
+        usage,
+        totalItems,
+        uniqueCount: usage.size,
+        duplicateDays,
+        missingNumbers: Array.from({ length: DAY_COUNT }, (_, index) => index + 1)
+          .filter((number) => !usage.has(number))
+      };
+    }
+
+    function nearestUnused(total, limit = 4) {
+      const usage = numberUsage();
+      const candidates = [];
+
+      for (let number = 1; number <= DAY_COUNT; number += 1) {
+        if (usage.has(number) || number <= total) continue;
+        candidates.push({
+          number,
+          delta: number - total
+        });
+      }
+
+      return candidates.slice(0, limit);
+    }
+
+    function addItems(count) {
+      const day = currentDay();
+      if (!day) return;
+
+      day.additions.push({
+        id: createId(),
+        count,
+        createdAt: new Date().toISOString()
+      });
+      saveAndRender();
+    }
+
+    function editAddition(id, count) {
+      const day = currentDay();
+      if (!day) return;
+
+      const addition = day.additions.find((entry) => entry.id === id);
+      if (!addition) return;
+
+      addition.count = count;
+      saveAndRender();
+    }
+
+    function removeAddition(id) {
+      const day = currentDay();
+      if (!day) return;
+
+      day.additions = day.additions.filter((entry) => entry.id !== id);
+      saveAndRender();
+    }
+
+    function undoLastAddition() {
+      const day = currentDay();
+      if (!day || day.additions.length === 0) return;
+
+      day.additions.pop();
+      saveAndRender();
+    }
+
+    function finishDay() {
+      const day = currentDay();
+      if (!day || day.additions.length === 0) return;
+
+      const total = dayTotal(day);
+      const usage = numberUsage();
+      const existing = usage.get(total);
+      const uniqueEffect = total >= 1 && total <= DAY_COUNT && !existing ? "+1 unique number" : "+0 unique numbers";
+      const duplicateMessage = existing
+        ? `${total} was already used on Day ${existing[0].dayNumber}.`
+        : total <= DAY_COUNT
+          ? `${total} is a new number.`
+          : `${total} is above 100, so it counts toward items only.`;
+
+      const ok = confirm(`Today's total: ${total}\n\n${duplicateMessage}\n\nCompleting today:\n+${total} items\n${uniqueEffect}`);
+      if (!ok) return;
+
+      day.status = "completed";
+      day.completedAt = new Date().toISOString();
+      saveAndRender();
+    }
+
+    function resetChallenge() {
+      const ok = confirm("Reset this prototype challenge and clear local data?");
+      if (!ok) return;
+
+      state.challenge = createChallenge();
+      state.editingAdditionId = null;
+      saveAndRender();
+    }
+
+    function openCountDialog(options = {}) {
+      state.editingAdditionId = options.additionId || null;
+      els.dialogTitle.textContent = state.editingAdditionId ? "Edit Addition" : "Add Items";
+      els.countInput.value = options.count || "";
+      els.countDialog.showModal();
+      setTimeout(() => els.countInput.focus(), 0);
+    }
+
+    function saveDialogCount() {
+      const count = Number.parseInt(els.countInput.value, 10);
+      if (!Number.isFinite(count) || count <= 0) {
+        els.countInput.setCustomValidity("Enter a positive number.");
+        els.countInput.reportValidity();
+        return false;
+      }
+
+      els.countInput.setCustomValidity("");
+      if (state.editingAdditionId) {
+        editAddition(state.editingAdditionId, count);
+      } else {
+        addItems(count);
+      }
+      state.editingAdditionId = null;
+      return true;
+    }
+
+    function render() {
+      const day = currentDay();
+      const summary = stats();
+
+      renderHeader(day, summary);
+      renderToday(day, summary);
+      renderAdditions(day);
+      renderProgress(day, summary);
+      renderHistory(summary);
+      renderCompletion(summary);
+    }
+
+    function renderHeader(day, summary) {
+      els.challengeSubtitle.textContent = `Started ${formatDate(state.challenge.startDate)}. ${summary.completed.length} completed days.`;
+      els.dayBadge.textContent = day ? `Day ${day.dayNumber} of ${DAY_COUNT}` : `${DAY_COUNT} days complete`;
+    }
+
+    function renderToday(day) {
+      if (!day) {
+        els.todayDate.textContent = "Challenge complete";
+        els.todayTotal.textContent = "0";
+        els.uniqueBadge.textContent = "Complete";
+        els.uniqueBadge.className = "badge green";
+        els.uniqueCopy.textContent = "All 100 days have been completed.";
+        els.suggestions.innerHTML = "";
+        els.finishButton.disabled = true;
+        els.undoButton.disabled = true;
+        els.customAddButton.disabled = true;
+        els.quickAddButtons.forEach((button) => {
+          button.disabled = true;
+        });
+        return;
+      }
+
+      const total = dayTotal(day);
+      const usage = numberUsage();
+      const existing = usage.get(total);
+
+      els.todayDate.textContent = formatDate(day.date);
+      els.todayTotal.textContent = formatNumber(total);
+      els.finishButton.disabled = day.additions.length === 0;
+      els.undoButton.disabled = day.additions.length === 0;
+      els.customAddButton.disabled = false;
+      els.quickAddButtons.forEach((button) => {
+        button.disabled = false;
+      });
+
+      if (total === 0) {
+        els.uniqueBadge.textContent = "Not started";
+        els.uniqueBadge.className = "badge blue";
+        els.uniqueCopy.textContent = "Add items to see whether today's total is a new number.";
+      } else if (total > DAY_COUNT) {
+        els.uniqueBadge.textContent = "Above range";
+        els.uniqueBadge.className = "badge blue";
+        els.uniqueCopy.textContent = `${total} contributes to the item goal, but unique-number coverage only counts 1 through 100.`;
+      } else if (existing) {
+        els.uniqueBadge.textContent = "Already used";
+        els.uniqueBadge.className = "badge yellow";
+        els.uniqueCopy.textContent = `${total} was previously completed on Day ${existing[0].dayNumber}. You can still finish today with this total.`;
+      } else {
+        els.uniqueBadge.textContent = "New number";
+        els.uniqueBadge.className = "badge green";
+        els.uniqueCopy.textContent = `${total} has not been used before.`;
+      }
+
+      const suggestions = nearestUnused(total);
+      els.suggestions.innerHTML = suggestions.length
+        ? suggestions.map((item) => `<span class="suggestion">${item.number} <span>+${item.delta}</span></span>`).join("")
+        : `<span class="status-copy">No higher unused number remains.</span>`;
+    }
+
+    function renderAdditions(day) {
+      if (!day) {
+        els.additionsList.innerHTML = `<div class="empty">No active day remains.</div>`;
+        return;
+      }
+
+      if (day.additions.length === 0) {
+        els.additionsList.innerHTML = `<div class="empty">No additions yet. Use the quick buttons to start today's tally.</div>`;
+        return;
+      }
+
+      els.additionsList.innerHTML = day.additions
+        .slice()
+        .reverse()
+        .map((addition) => `
+          <div class="addition-row">
+            <div class="time">${formatTime(addition.createdAt)}</div>
+            <div class="addition-count">+${formatNumber(addition.count)}</div>
+            <div class="row-actions">
+              <button class="icon-btn" data-edit="${addition.id}" title="Edit addition" aria-label="Edit addition" type="button">Edit</button>
+              <button class="icon-btn danger" data-remove="${addition.id}" title="Remove addition" aria-label="Remove addition" type="button">Del</button>
+            </div>
+          </div>
+        `)
+        .join("");
+    }
+
+    function renderProgress(day, summary) {
+      els.daysMetric.textContent = `${summary.completed.length} / ${DAY_COUNT}`;
+      els.uniqueMetric.textContent = `${summary.uniqueCount} / ${DAY_COUNT}`;
+      els.itemsMetric.textContent = `${formatNumber(summary.totalItems)} / ${formatNumber(ITEM_GOAL)}`;
+
+      els.daysMeter.style.setProperty("--value", `${summary.completed.length}%`);
+      els.uniqueMeter.style.setProperty("--value", `${summary.uniqueCount}%`);
+      els.itemsMeter.style.setProperty("--value", `${Math.min(100, (summary.totalItems / ITEM_GOAL) * 100)}%`);
+
+      const todayTotal = day ? dayTotal(day) : 0;
+      els.numberGrid.innerHTML = Array.from({ length: DAY_COUNT }, (_, index) => {
+        const number = index + 1;
+        const used = summary.usage.get(number);
+        const classes = ["grid-cell"];
+        if (used && used.length === 1) classes.push("used");
+        if (used && used.length > 1) classes.push("duplicate");
+        if (number === todayTotal && day) classes.push("today");
+
+        const marker = used && used.length > 1 ? `<span class="mark">x${used.length}</span>` : "";
+        return `<div class="${classes.join(" ")}" title="${number}${used ? ` used ${used.length} time(s)` : " unused"}">${number}${marker}</div>`;
+      }).join("");
+    }
+
+    function renderHistory(summary) {
+      if (summary.completed.length === 0) {
+        els.historyList.innerHTML = `<div class="empty">Completed days will appear here.</div>`;
+        return;
+      }
+
+      const totals = new Map();
+      for (const day of summary.completed) {
+        const total = dayTotal(day);
+        totals.set(total, (totals.get(total) || 0) + 1);
+      }
+
+      els.historyList.innerHTML = summary.completed
+        .slice()
+        .reverse()
+        .map((day) => {
+          const total = dayTotal(day);
+          const isDuplicate = totals.get(total) > 1;
+          const additions = day.additions
+            .map((addition) => `${formatTime(addition.createdAt)} +${formatNumber(addition.count)}`)
+            .join(", ");
+
+          return `
+            <div class="history-row">
+              <div><strong>Day ${day.dayNumber}</strong></div>
+              <div>
+                <div class="day-total">${formatNumber(total)} items</div>
+                <div class="date">${formatDate(day.date)}</div>
+              </div>
+              <span class="badge ${isDuplicate ? "yellow" : "green"}">${isDuplicate ? "Duplicate" : "Unique"}</span>
+              <div class="history-details">${additions || "No additions recorded"}</div>
+            </div>
+          `;
+        })
+        .join("");
+    }
+
+    function renderCompletion(summary) {
+      if (summary.completed.length < DAY_COUNT) {
+        els.completionPanel.classList.remove("show");
+        els.completionPanel.innerHTML = "";
+        return;
+      }
+
+      const volumeReached = summary.totalItems >= ITEM_GOAL;
+      els.completionPanel.classList.add("show");
+      els.completionPanel.innerHTML = `
+        <div class="panel-header">
+          <div>
+            <h2>Challenge Complete</h2>
+            <p class="subtitle">${DAY_COUNT} days finished</p>
+          </div>
+          <span class="badge ${volumeReached ? "green" : "yellow"}">${volumeReached ? "Volume goal reached" : "Below volume goal"}</span>
+        </div>
+        <div class="metrics">
+          <div class="metric">
+            <div class="metric-label">Items</div>
+            <div class="metric-value">${formatNumber(summary.totalItems)}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Unique coverage</div>
+            <div class="metric-value">${summary.uniqueCount} / ${DAY_COUNT}</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Duplicate days</div>
+            <div class="metric-value">${summary.duplicateDays}</div>
+          </div>
+        </div>
+        <p class="status-copy">Missing numbers: ${summary.missingNumbers.length ? summary.missingNumbers.join(", ") : "none"}</p>
+      `;
+    }
+
+    function saveAndRender() {
+      saveChallenge();
+      render();
+    }
+
+    document.addEventListener("click", (event) => {
+      const addButton = event.target.closest("[data-add]");
+      if (addButton) {
+        addItems(Number.parseInt(addButton.dataset.add, 10));
+        return;
+      }
+
+      const editButton = event.target.closest("[data-edit]");
+      if (editButton) {
+        const day = currentDay();
+        const addition = day.additions.find((entry) => entry.id === editButton.dataset.edit);
+        if (addition) openCountDialog({ additionId: addition.id, count: addition.count });
+        return;
+      }
+
+      const removeButton = event.target.closest("[data-remove]");
+      if (removeButton) {
+        removeAddition(removeButton.dataset.remove);
+      }
+    });
+
+    els.customAddButton.addEventListener("click", () => openCountDialog());
+    els.finishButton.addEventListener("click", finishDay);
+    els.undoButton.addEventListener("click", undoLastAddition);
+    els.resetButton.addEventListener("click", resetChallenge);
+    els.mobileResetButton.addEventListener("click", resetChallenge);
+
+    els.countDialog.addEventListener("close", () => {
+      state.editingAdditionId = null;
+      els.countInput.setCustomValidity("");
+    });
+
+    els.saveCountButton.addEventListener("click", (event) => {
+      if (!saveDialogCount()) {
+        event.preventDefault();
+      }
+    });
+
+    render();
+  </script>
+</body>
+</html>
