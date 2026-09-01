@@ -4,6 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>100-Day Decluttering Challenge</title>
+  <meta name="theme-color" content="#2f7d4f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Declutter 100">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
   <style>
     :root {
       color-scheme: light;
@@ -63,6 +71,14 @@
       gap: 20px;
       align-items: flex-start;
       margin-bottom: 18px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
 
     h1,
@@ -513,6 +529,40 @@
       font-size: 1rem;
     }
 
+    .field textarea {
+      width: 100%;
+      min-height: 260px;
+      resize: vertical;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      padding: 10px;
+      color: var(--ink);
+      background: #fff;
+      font: 0.84rem ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      line-height: 1.45;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 10;
+      transform: translateX(-50%) translateY(20px);
+      padding: 10px 13px;
+      border-radius: 7px;
+      color: #fff;
+      background: var(--ink);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.16s ease, transform 0.16s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
     .dialog-actions {
       display: flex;
       justify-content: flex-end;
@@ -539,6 +589,10 @@
 
       .topbar {
         align-items: stretch;
+      }
+
+      .topbar-actions {
+        justify-content: flex-start;
       }
 
       .desktop-reset {
@@ -597,7 +651,11 @@
         <h1>100-Day Decluttering Challenge</h1>
         <p class="subtitle" id="challengeSubtitle">Start today and track every item removed.</p>
       </div>
-      <button class="ghost-btn desktop-reset" id="resetButton" type="button">Reset</button>
+      <div class="topbar-actions">
+        <button class="secondary-btn" id="installButton" type="button">Install</button>
+        <button class="secondary-btn" id="copyStateButton" type="button">Copy state</button>
+        <button class="ghost-btn desktop-reset" id="resetButton" type="button">Reset</button>
+      </div>
     </header>
 
     <section class="panel completion" id="completionPanel" aria-live="polite"></section>
@@ -699,6 +757,36 @@
     </form>
   </dialog>
 
+  <dialog id="exportDialog">
+    <form class="dialog-inner" method="dialog">
+      <h2>App State</h2>
+      <p class="status-copy">Clipboard access was unavailable. Select and copy this state manually.</p>
+      <div class="field">
+        <label for="stateExport">State JSON</label>
+        <textarea id="stateExport" readonly></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button class="primary-btn" value="default" type="submit">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="installDialog">
+    <form class="dialog-inner" method="dialog">
+      <h2>Install Status</h2>
+      <p class="status-copy" id="installMessage"></p>
+      <div class="field">
+        <label for="installDiagnostics">Diagnostics</label>
+        <textarea id="installDiagnostics" readonly></textarea>
+      </div>
+      <div class="dialog-actions">
+        <button class="primary-btn" value="default" type="submit">Done</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script>
     const STORAGE_KEY = "declutteringChallenge.v1";
     const DAY_COUNT = 100;
@@ -706,7 +794,9 @@
 
     const state = {
       challenge: loadChallenge(),
-      editingAdditionId: null
+      editingAdditionId: null,
+      installPrompt: null,
+      serviceWorkerStatus: "not checked"
     };
 
     const els = {
@@ -731,9 +821,17 @@
       historyList: document.querySelector("#historyList"),
       resetButton: document.querySelector("#resetButton"),
       mobileResetButton: document.querySelector("#mobileResetButton"),
+      installButton: document.querySelector("#installButton"),
+      copyStateButton: document.querySelector("#copyStateButton"),
       customAddButton: document.querySelector("#customAddButton"),
       quickAddButtons: document.querySelectorAll("[data-add]"),
       countDialog: document.querySelector("#countDialog"),
+      exportDialog: document.querySelector("#exportDialog"),
+      stateExport: document.querySelector("#stateExport"),
+      installDialog: document.querySelector("#installDialog"),
+      installMessage: document.querySelector("#installMessage"),
+      installDiagnostics: document.querySelector("#installDiagnostics"),
+      toast: document.querySelector("#toast"),
       dialogTitle: document.querySelector("#dialogTitle"),
       countInput: document.querySelector("#countInput"),
       saveCountButton: document.querySelector("#saveCountButton")
@@ -940,6 +1038,91 @@
       state.challenge = createChallenge();
       state.editingAdditionId = null;
       saveAndRender();
+    }
+
+    async function copyAppState() {
+      const payload = JSON.stringify(state.challenge, null, 2);
+
+      try {
+        if (!navigator.clipboard || !window.isSecureContext) throw new Error("Clipboard unavailable");
+        await navigator.clipboard.writeText(payload);
+        showToast("App state copied");
+      } catch {
+        els.stateExport.value = payload;
+        els.exportDialog.showModal();
+        setTimeout(() => {
+          els.stateExport.focus();
+          els.stateExport.select();
+        }, 0);
+      }
+    }
+
+    function showToast(message) {
+      els.toast.textContent = message;
+      els.toast.classList.add("show");
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => {
+        els.toast.classList.remove("show");
+      }, 2200);
+    }
+
+    async function installApp() {
+      if (state.installPrompt) {
+        const promptEvent = state.installPrompt;
+        state.installPrompt = null;
+        promptEvent.prompt();
+        const choice = await promptEvent.userChoice;
+        showToast(choice.outcome === "accepted" ? "Install started" : "Install dismissed");
+        updateInstallButton();
+        return;
+      }
+
+      showInstallDiagnostics();
+    }
+
+    async function showInstallDiagnostics() {
+      const diagnostics = await getInstallDiagnostics();
+      els.installMessage.textContent = diagnostics.installPromptReady
+        ? "The install prompt is ready. Tap Install again."
+        : "Chrome has not exposed an install prompt for this page yet.";
+      els.installDiagnostics.value = Object.entries(diagnostics)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("\n");
+      els.installDialog.showModal();
+    }
+
+    async function getInstallDiagnostics() {
+      let registrationState = state.serviceWorkerStatus;
+      if ("serviceWorker" in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration("./");
+          registrationState = registration
+            ? `${registration.active ? "active" : "registered"}${navigator.serviceWorker.controller ? ", controlling page" : ", reload may be needed"}`
+            : "not registered";
+        } catch (error) {
+          registrationState = `error: ${error.message}`;
+        }
+      }
+
+      return {
+        url: location.href,
+        secureContext: window.isSecureContext,
+        standalone: isStandalone(),
+        serviceWorkerSupported: "serviceWorker" in navigator,
+        serviceWorker: registrationState,
+        installPromptReady: Boolean(state.installPrompt),
+        manifest: document.querySelector('link[rel="manifest"]')?.href || "missing",
+        userAgent: navigator.userAgent
+      };
+    }
+
+    function isStandalone() {
+      return window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    }
+
+    function updateInstallButton() {
+      els.installButton.textContent = state.installPrompt ? "Install app" : "Install status";
+      els.installButton.disabled = isStandalone();
     }
 
     function openCountDialog(options = {}) {
@@ -1192,6 +1375,21 @@
     els.undoButton.addEventListener("click", undoLastAddition);
     els.resetButton.addEventListener("click", resetChallenge);
     els.mobileResetButton.addEventListener("click", resetChallenge);
+    els.copyStateButton.addEventListener("click", copyAppState);
+    els.installButton.addEventListener("click", installApp);
+
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+      state.installPrompt = event;
+      updateInstallButton();
+      showToast("Install is available");
+    });
+
+    window.addEventListener("appinstalled", () => {
+      state.installPrompt = null;
+      updateInstallButton();
+      showToast("App installed");
+    });
 
     els.countDialog.addEventListener("close", () => {
       state.editingAdditionId = null;
@@ -1204,6 +1402,24 @@
       }
     });
 
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+          .then((registration) => {
+            state.serviceWorkerStatus = registration.active ? "active" : "registered";
+            updateInstallButton();
+          })
+          .catch((error) => {
+            state.serviceWorkerStatus = `registration failed: ${error.message}`;
+            console.warn("Service worker registration failed", error);
+            updateInstallButton();
+          });
+      });
+    } else {
+      state.serviceWorkerStatus = "unsupported";
+    }
+
+    updateInstallButton();
     render();
   </script>
 </body>
